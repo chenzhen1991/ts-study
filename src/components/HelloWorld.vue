@@ -1,57 +1,74 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
+  <div>
+    <h2>{{msg}}</h2>
     <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
+      <input type="text" @keydown.enter="addFeature" />
     </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript" target="_blank" rel="noopener">typescript</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <div
+      v-for="feature in features"
+      :key="feature.id"
+      :class="feature.selected ? 'selected' : null "
+    >{{ feature.name }}</div>
+    <p>特性总数： {{total}}</p>
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-
+<script lang='ts'>
+// import axios from 'axios'
+import { Vue, Component, Prop, Emit } from 'vue-property-decorator'
+// eslint-disable-next-line no-unused-vars
+import { FeatureSelect } from '@/types/index'
 @Component
-export default class HelloWorld extends Vue {
-  @Prop() private msg!: string;
+export default class HelloWord extends Vue {
+    @Prop({ type: String, default: '' })
+    msg!: string
+
+    @Prop({ type: String, default: '' })
+    msg1!: string
+
+    // msg!: string
+  // 属性直接作为data使用
+  features: FeatureSelect[] = [];
+
+  // 方法名就是事件名
+  @Emit()
+  addFeature (e: KeyboardEvent) {
+    // 类型断言 不是类型转换 是用户判定
+    // eslint-disable-next-line no-unused-expressions
+    const inp = e.target as HTMLInputElement
+    // eslint-disable-next-line no-unused-vars
+    const feature: FeatureSelect = {
+      id: this.features.length + 1,
+      name: inp.value,
+      selected: false
+    }
+    this.features.push(feature)
+    inp.value = ''
+    // 通知父组件 返回值就是参数
+    return feature
+  }
+
+  // 生命周期的钩子
+  async created () {
+    // 泛型
+    // const resp = await axios.get<FeatureSelect[]>('/api/list')
+    const resp = await this.$http.get<FeatureSelect[]>('/api/list')
+    console.log(resp)
+
+    this.features = resp.data
+  }
+
+  // 存取器可以转换为计算属性
+  get total () {
+    return this.features.length
+  }
+
+//   beforeRouter  不是vue自己的路由 不会触发 是router里面的钩子
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+<style scoped>
+.selected {
+  background-color: rgb(196, 247, 240);
 }
 </style>

@@ -1,20 +1,42 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <img alt="Vue logo" src="./assets/logo.png" />
+    <!-- 使用全局状态 -->
+    <p @click="add">{{$store.state.counter.count}}</p>
+    <p @click="asyncAdd">{{count}}</p>
+    <HelloWorld @add-feature="addFeature" msg="Welcome to Your Vue.js + TypeScript App" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import HelloWorld from './components/HelloWorld.vue'
+// eslint-disable-next-line no-unused-vars
+import { FeatureSelect } from './types'
+import CounterModule from '@/store/counter'
 
 @Component({
   components: {
     HelloWorld
   }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  addFeature (feature: FeatureSelect) {
+    console.log('新增了一个特性', feature.name)
+  }
+
+  add () {
+    CounterModule.add()
+  }
+
+  get count () {
+    return CounterModule.count
+  }
+
+  asyncAdd () {
+    CounterModule.asyncAdd()
+  }
+}
 </script>
 
 <style lang="scss">
