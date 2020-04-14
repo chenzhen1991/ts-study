@@ -31,7 +31,7 @@ export default class HelloWord extends Vue {
   features: FeatureSelect[] = [];
 
   // 方法名就是事件名
-  @Emit()
+  @Emit('add')
   addFeature (e: KeyboardEvent) {
     // 类型断言 不是类型转换 是用户判定
     // eslint-disable-next-line no-unused-expressions

@@ -31,7 +31,8 @@ function greet (person: string): string {
 
 greet('zzz')
 
-function warn (): void { }
+function warn (): void {
+}
 
 // 类型别名
 let objType: { foo: string, bar: string }
@@ -40,13 +41,13 @@ objType = { foo: 'fooo', bar: 'barr' }
 objType.foo
 
 // 类型别名:自定义类型
-type Foobar = {foo: string, bar: string}
+type Foobar = { foo: string, bar: string }
 let aliasType: Foobar
 
 let me: string
 me = 'eerrr'
 
-type Foobar1 = {foo: string, bar: string}
+type Foobar1 = { foo: string, bar: string }
 let aliasType1: Foobar1
 
 // 函数
@@ -64,10 +65,12 @@ class Parent {
 
   // 参数属性  构造函数参数加修饰符 能够定义为成员属性
   // eslint-disable-next-line no-useless-constructor
-  constructor (public tua = 'tua') {}
+  constructor (public tua = 'tua') {
+  }
 
   // 方法也有修饰符
-  private someMethods () {}
+  private someMethods () {
+  }
 
   // 存取器 属性方式访问 可添加额外逻辑 控制读写性
   get foo () {
@@ -78,6 +81,7 @@ class Parent {
     this._foo = val
   }
 }
+
 // eslint-disable-next-line no-new
 new Parent()
 
@@ -89,3 +93,60 @@ class Children extends Parent {
 
 // eslint-disable-next-line no-new
 new Children()
+
+// 装饰器
+// 定义:工厂函数
+// 分类：类装饰器 /属性装饰器/方法装饰器/参数装饰器
+function log (fn: ((message?: any) => void) & ((message?: any) => void)) {
+  return function (target: Function) {
+    target.prototype.log = function () {
+      // console.log(this.bar)
+      fn(this.bar)
+    }
+  }
+}
+
+// function log (target:Function) {
+//   target.prototype.log = function () {
+//     console.log(this.bar)
+//   }
+// }
+
+// 方法装饰器c参数1是实例 参数2 方法名称  参数3 描述对象
+function rec (target:any, name:string, descriptor:any) {
+  // 1 执行老方法
+  const baz = descriptor.value
+  // 2 扩展额外的功能
+  descriptor.value = function (val: string) {
+    console.log('run methods', val)
+    baz.call(this, val)
+  }
+}
+
+// 属性装饰器 参数1是实例  参数2 是属性名称
+function mua (target: any, name: any) {
+  target[name] = 'mua~'
+  console.log('mua', target[name])
+}
+
+// @log(console.log)
+@log(window.alert)
+class Foo {
+  log () {
+    throw new Error('Methods not implement')
+  }
+
+  bar = 'bar'
+
+  @mua
+  ns!: string
+
+  @rec
+  setBar (val: string) {
+    this.bar = val
+  }
+}
+
+const foo = new Foo()
+foo.log()
+foo.setBar('rrr')

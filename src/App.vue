@@ -4,20 +4,25 @@
     <!-- 使用全局状态 -->
     <p @click="add">{{$store.state.counter.count}}</p>
     <p @click="asyncAdd">{{count}}</p>
-    <HelloWorld @add-feature="addFeature" msg="Welcome to Your Vue.js + TypeScript App" />
+    <HelloWorld @add="addFeature" msg="Welcome to Your Vue.js + TypeScript App" />
+    <Decor msg="2344" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import HelloWorld from './components/HelloWorld.vue'
+import Decor from './components/Decor.vue'
 // eslint-disable-next-line no-unused-vars
 import { FeatureSelect } from './types'
 import CounterModule from '@/store/counter'
 
+// @Component
+// @Component({...})
 @Component({
   components: {
-    HelloWorld
+    HelloWorld,
+    Decor
   }
 })
 export default class App extends Vue {
